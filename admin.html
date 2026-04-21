@@ -369,6 +369,41 @@
       margin-top: 8px;
     }
 
+    /* ── GitHub Token Banner ── */
+    .token-banner {
+      background: #fff8f0;
+      border-bottom: 1px solid #f0dfc8;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: #6b4f3a;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .token-banner input {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      padding: 6px 12px;
+      border: 1px solid #e0d5c8;
+      border-radius: 6px;
+      outline: none;
+      width: 260px;
+    }
+
+    .token-banner input:focus { border-color: #b08968; }
+
+    .token-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .token-status.ok { background: #e8f5e9; color: #2e7d32; }
+    .token-status.missing { background: #fce4ec; color: #c62828; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .main { flex-direction: column; }
@@ -390,6 +425,17 @@
       <button class="btn btn-secondary" onclick="exportDataAs()" title="Choose where to save">Save As…</button>
       <button class="btn btn-primary" onclick="exportData()">Save</button>
     </div>
+  </div>
+
+  <!-- GitHub Token Banner -->
+  <div class="token-banner">
+    <span>🔑 GitHub Token:</span>
+    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken()" />
+    <span class="token-status" id="tokenStatus">—</span>
+    <span style="color:#999; margin-left:4px;">
+      Needed to save changes live.
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=JK+Wedding+Admin" target="_blank" style="color:#b08968;">Generate token ↗</a>
+    </span>
   </div>
 
   <!-- Filter Bar -->
@@ -627,8 +673,34 @@
       render(document.getElementById('searchGuest').value);
     }
 
-    // ── File handle for direct save ──
-    let guestsFileHandle = null;
+    // ── GitHub Config ──
+    const GH_OWNER = 'jeromieebenezer';
+    const GH_REPO  = 'JK_Wedding';
+    const GH_FILE  = 'guests.js';
+    const GH_BRANCH = 'main';
+
+    function getToken() { return localStorage.getItem('jk_gh_token') || ''; }
+
+    function saveToken() {
+      const t = document.getElementById('ghToken').value.trim();
+      localStorage.setItem('jk_gh_token', t);
+      updateTokenStatus();
+    }
+
+    function updateTokenStatus() {
+      const t = getToken();
+      const el = document.getElementById('tokenStatus');
+      if (t && t.startsWith('ghp_')) {
+        el.textContent = '✓ Token saved';
+        el.className = 'token-status ok';
+      } else if (t) {
+        el.textContent = '✓ Token saved';
+        el.className = 'token-status ok';
+      } else {
+        el.textContent = 'No token';
+        el.className = 'token-status missing';
+      }
+    }
 
     function buildGuestsJS() {
       const validGuests = guests.filter(g => g.Guest && g.Guest !== '(empty seat)' && g.Table !== null);
@@ -643,29 +715,54 @@
 
     async function exportData() {
       const { js, count } = buildGuestsJS();
+      const token = getToken();
 
-      // Use File System Access API if available (Chrome/Edge)
-      if ('showSaveFilePicker' in window) {
+      if (token) {
+        // ── Push directly to GitHub ──
         try {
-          // Reuse existing handle if we already picked the file
-          if (!guestsFileHandle) {
-            guestsFileHandle = await window.showSaveFilePicker({
-              suggestedName: 'guests.js',
-              types: [{ description: 'JavaScript', accept: { 'application/javascript': ['.js'] } }]
-            });
+          toast('Saving to GitHub…');
+
+          // 1. Get current file SHA
+          const getRes = await fetch(
+            `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}`,
+            { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
+          );
+          if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
+          const fileData = await getRes.json();
+          const sha = fileData.sha;
+
+          // 2. Commit updated file
+          const content = btoa(unescape(encodeURIComponent(js)));
+          const putRes = await fetch(
+            `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`,
+            {
+              method: 'PUT',
+              headers: {
+                Authorization: `token ${token}`,
+                Accept: 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: `Update seating chart (${count} guests)`,
+                content,
+                sha,
+                branch: GH_BRANCH
+              })
+            }
+          );
+          if (!putRes.ok) {
+            const err = await putRes.json();
+            throw new Error(err.message || putRes.status);
           }
-          const writable = await guestsFileHandle.createWritable();
-          await writable.write(js);
-          await writable.close();
-          toast(`✓ Saved ${count} guests directly to guests.js`);
+
+          toast(`✓ Saved ${count} guests — live site updates in ~30 seconds`);
         } catch (err) {
-          if (err.name !== 'AbortError') {
-            guestsFileHandle = null;
-            toast('Save cancelled or failed — try again');
-          }
+          console.error(err);
+          toast(`GitHub save failed: ${err.message}`);
         }
+
       } else {
-        // Fallback: download
+        // ── Fallback: download ──
         const blob = new Blob([js], { type: 'application/javascript' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -673,15 +770,11 @@
         a.download = 'guests.js';
         a.click();
         URL.revokeObjectURL(url);
-        toast(`Downloaded guests.js — replace the existing file with this`);
+        toast('Downloaded guests.js — add a GitHub token to save directly to the live site');
       }
     }
 
-    // ── Save As (force re-pick location) ──
-    async function exportDataAs() {
-      guestsFileHandle = null;
-      await exportData();
-    }
+    async function exportDataAs() { await exportData(); }
 
     // ── Toast ──
     function toast(msg) {
@@ -730,6 +823,9 @@
     });
 
     // ── Init ──
+    const savedToken = getToken();
+    if (savedToken) document.getElementById('ghToken').value = savedToken;
+    updateTokenStatus();
     render();
   </script>
 </body>
