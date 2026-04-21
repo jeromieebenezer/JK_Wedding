@@ -404,6 +404,26 @@
     .token-status.ok { background: #e8f5e9; color: #2e7d32; }
     .token-status.missing { background: #fce4ec; color: #c62828; }
 
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      padding: 8px 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      color: #aaa;
+      background: #faf7f4;
+      border-bottom: 1px solid #e0d5c8;
+      letter-spacing: 0.5px;
+    }
+
+    .breadcrumb a {
+      color: #b08968;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .breadcrumb span { color: #ccc; margin: 0 6px; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .main { flex-direction: column; }
@@ -413,6 +433,15 @@
   </style>
 </head>
 <body>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="./index.html">Home</a>
+    <span>›</span>
+    <a href="./seatingchart.html">Seating Chart</a>
+    <span>›</span>
+    Admin
+  </nav>
 
   <!-- Top Bar -->
   <div class="topbar">

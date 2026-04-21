@@ -281,6 +281,43 @@
         background: #fff;
       }
 
+      /* ── Breadcrumb ── */
+      .breadcrumb {
+        padding: 10px 20px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        color: #aaa;
+        background: #fff;
+        letter-spacing: 0.5px;
+      }
+
+      .breadcrumb a {
+        color: #b08968;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover { text-decoration: underline; }
+
+      .breadcrumb span { color: #ccc; margin: 0 6px; }
+
+      /* ── Page footer ── */
+      .page-footer {
+        text-align: center;
+        padding: 24px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        color: #ccc;
+        letter-spacing: 1px;
+        background: #fff;
+      }
+
+      .page-footer a {
+        color: #d4b896;
+        text-decoration: none;
+      }
+
+      .page-footer a:hover { color: #b08968; }
+
       /* ── No results ── */
       .no-results {
         text-align: center;
@@ -401,6 +438,13 @@
     </script>
   </head>
   <body>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a href="./index.html">Home</a>
+      <span>›</span>
+      Seating Chart
+    </nav>
+
     <div class="container">
       <div class="header">
         <div class="overlay"></div>
@@ -554,6 +598,12 @@
           <line x1="390" y1="540" x2="440" y2="540" stroke="#b08968" stroke-width="1"/>
         </svg>
       </div>
+    </div>
+    <!-- Page Footer -->
+    <div class="page-footer">
+      <a href="./index.html">← Back to Ceremony Program</a>
+      &nbsp;&middot;&nbsp;
+      <a href="./admin.html">Manage Seating</a>
     </div>
   </body>
 </html>
