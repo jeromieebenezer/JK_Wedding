@@ -233,6 +233,31 @@
         font-style: italic;
       }
 
+      /* ── Ministers Block ── */
+      .ministers-block {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        margin-bottom: 40px;
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+      }
+
+      .minister-entry .minister-title {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #3a3a3a;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .minister-entry .minister-name {
+        font-size: 14px;
+        color: #555;
+        font-weight: 400;
+      }
+
       /* ── Role Groups ── */
       .role-group {
         margin-bottom: 32px;
@@ -361,19 +386,18 @@
       <p class="section-subtitle">Order of Service</p>
       <div class="section-divider"></div>
 
+      <div class="ministers-block">
+        <div class="minister-entry">
+          <div class="minister-title">Presiding Minister</div>
+          <div class="minister-name">Pastor Wilson Varkey</div>
+        </div>
+        <div class="minister-entry">
+          <div class="minister-title">Solemnizing Minister</div>
+          <div class="minister-name">Pastor Sabu Varghese</div>
+        </div>
+      </div>
+
       <ul class="program-list">
-        <li>
-          <span class="program-item">
-            Presiding Minister
-            <span class="program-detail">Pastor Sam Sabu Varghese</span>
-          </span>
-        </li>
-        <li>
-          <span class="program-item">
-            Solemnizing Minister
-            <span class="program-detail">Dr. Wilson Varkey</span>
-          </span>
-        </li>
         <li><span class="program-item">Processional Begins</span></li>
         <li>
           <span class="program-item">
@@ -384,7 +408,7 @@
         <li>
           <span class="program-item">
             Welcome &amp; Opening Prayer
-            <span class="program-detail">Br. William Daniel &amp; Br. Thomas George</span>
+            <span class="program-detail">Br. William Daniel</span>
           </span>
         </li>
         <li><span class="program-item">Worship</span></li>
@@ -421,7 +445,7 @@
         <li>
           <span class="program-item">
             Prayer of Blessing
-            <span class="program-detail">Thomas George</span>
+            <span class="program-detail">Br. Thomas George</span>
           </span>
         </li>
         <li>
