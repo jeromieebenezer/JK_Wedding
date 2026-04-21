@@ -247,7 +247,7 @@ const guestData = [
   { "Guest": "Esther Abraham", "Table": 37 },
   { "Guest": "Lydia Abraham", "Table": 37 },
   { "Guest": "Sarah Abraham", "Table": 37 },
-  { "Guest": "Annie Blossom", "Table": 26 },
+  { "Guest": "Annie Blossom Ebenezer", "Table": 26 },
   { "Guest": "Jemima Ebenezer", "Table": 26 },
   { "Guest": "Jonathan Ebenezer", "Table": 26 },
   { "Guest": "Koshy Sam", "Table": 26 },
