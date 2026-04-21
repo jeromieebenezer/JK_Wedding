@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Wedding Seating</title>
+    <title>Jeromie & Karen — Wedding Ceremony</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
-    <script type="text/javascript" src="./guests.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto&family=Open+Sans&family=Great+Vibes&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&family=Open+Sans:wght@300;400&display=swap" rel="stylesheet" />
     <style>
       @supports(padding:max(0px)) {
         body, header, footer {
@@ -15,404 +13,540 @@
         }
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
 
       body {
-        color: #000;
-        background: #000;
-        padding: 0;
-        margin: 0;
-        font-family: 'Roboto', sans-serif;
-        scroll-behavior: smooth;
+        font-family: 'Open Sans', sans-serif;
+        color: #3a3a3a;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
       }
 
-      .container {
-        height: 100%;
-      }
-
-      /* ── Header / Hero ── */
-      .header {
-        height: 550px;
-        overflow: hidden;
+      /* ── Hero Section ── */
+      .hero {
         position: relative;
+        width: 100%;
+        height: 100vh;
+        min-height: 500px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .header img {
+      .hero img {
+        position: absolute;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center 35%;
-        display: block;
+        object-position: center 30%;
       }
 
-      .overlay {
+      .hero-overlay {
         position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%);
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.50) 100%);
         z-index: 1;
       }
 
-      .container-title {
-        padding: 10px;
-        top: 77%;
-        position: absolute;
-        font-family: monospace;
-        color: #fff;
-        font-size: 17px;
-        text-align: center;
-      }
-
-      /* ── Search Area ── */
-      .search {
-        background: #fff;
-        height: 40%;
-        top: -10%;
-        border-radius: 30px;
+      .hero-content {
         position: relative;
-        z-index: 1;
-        transition: all 1s;
-      }
-
-      #search {
-        padding: 16px;
-        font-size: 14px;
-        width: 100%;
-        border-radius: 30px;
-        border: 0;
-        font-family: 'Montserrat';
-        box-shadow: 0 0 3px #aaa;
-        -webkit-appearance: none;
-        -webkit-box-shadow: 0 0 3px #aaa;
-        outline: none;
-      }
-
-      #search:focus {
-        box-shadow: 0 0 6px #b08968;
-        -webkit-box-shadow: 0 0 6px #b08968;
-      }
-
-      /* ── Welcome Text ── */
-      #welcomeText {
-        font-family: 'Montserrat';
-        padding: 10px;
+        z-index: 2;
         text-align: center;
+        color: #fff;
+        padding: 20px;
       }
 
-      #welcomeText .couple-names {
+      .hero-content h1 {
         font-family: 'Great Vibes', cursive;
-        font-size: 32px;
-        color: #b08968;
-        margin: 5px 0;
+        font-size: 64px;
+        font-weight: 400;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
         word-spacing: 8px;
       }
 
-      #welcomeText p {
-        color: #555;
-        font-size: 14px;
-      }
-
-      /* ── Results ── */
-      #result {
-        padding: 10px;
-        background: #fff;
-      }
-
-      #resultbox {
-        border-radius: 6px;
-        background: #fff;
-        padding: 10px;
-        font-size: 20px;
-        display: flex;
-        flex-direction: row;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      #resultbox:hover {
-        background: #f9f5f0;
-      }
-
-      #resultbox #header {
-        padding-left: 14px;
-        font-size: 19px;
+      .hero-content .date {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        letter-spacing: 4px;
         text-transform: uppercase;
-        margin-top: 6px;
-        font-family: 'Montserrat';
+        opacity: 0.9;
+        font-weight: 300;
       }
 
-      #resultbox p {
-        font-size: 15px;
-        padding-left: 12px;
+      .hero-content .divider {
+        width: 60px;
+        height: 1px;
+        background: rgba(255,255,255,0.6);
+        margin: 16px auto;
       }
 
-      .tableNumber {
-        font-size: 45px;
-        color: #b08968;
-        display: flex;
-        justify-content: center;
-      }
-
-      .tableNameSlack {
-        font-size: 12px;
-        padding: 10px;
-        color: #999;
-        font-family: 'Montserrat';
-        letter-spacing: 2px;
-      }
-
-      .lastName {
-        font-family: 'Montserrat';
-        font-size: 30px;
-        text-transform: uppercase;
-        font-weight: 600;
-        margin-left: 13px;
-      }
-
-      .more {
+      .scroll-hint {
         position: absolute;
-        right: 25px;
-        margin-top: 7px;
-      }
-
-      .seeMore {
-        font-family: 'Montserrat';
-        padding: 10px 16px 15px;
-        font-size: 13px;
-        color: #b08968;
-        cursor: pointer;
-      }
-
-      .seeMore:hover {
-        text-decoration: underline;
-      }
-
-      .information {
-        padding: 0 16px 10px;
-        font-family: 'Montserrat';
-        font-size: 12px;
-        color: #555;
-      }
-
-      .sameTable {
-        overflow: scroll;
-        display: none;
-      }
-
-      .sameTable div {
-        padding: 5px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .socialMedia {
-        padding: 15px;
-        font-family: 'Montserrat';
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        color: rgba(255,255,255,0.7);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
         text-align: center;
-        color: #555;
+        animation: bounce 2s infinite;
       }
 
-      /* ── User Avatar SVG fallback ── */
-      .avatar {
-        width: 35px;
-        height: 35px;
-        background: #e8ddd3;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
+      .scroll-hint::after {
+        content: '';
+        display: block;
+        width: 1px;
+        height: 30px;
+        background: rgba(255,255,255,0.4);
+        margin: 8px auto 0;
       }
 
-      .avatar svg {
-        width: 20px;
-        height: 20px;
-        fill: #b08968;
+      @keyframes bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50% { transform: translateX(-50%) translateY(8px); }
       }
 
-      .avatar-lg {
-        width: 50px;
-        height: 50px;
+      /* ── Section Styling ── */
+      section {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 60px 24px;
       }
 
-      .avatar-lg svg {
-        width: 28px;
-        height: 28px;
-      }
-
-      /* ── Placeholder header image ── */
-      .header-placeholder {
-        width: 100%;
-        height: 350px;
-        background: linear-gradient(135deg, #d4a574 0%, #b08968 30%, #8c6b4f 60%, #6b4f3a 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .header-placeholder .hero-text {
-        color: #fff;
-        text-align: center;
-        z-index: 0;
-      }
-
-      .header-placeholder .hero-text h1 {
+      .section-title {
         font-family: 'Great Vibes', cursive;
-        font-size: 48px;
-        margin: 0;
+        font-size: 42px;
+        color: #b08968;
+        text-align: center;
+        margin-bottom: 8px;
         font-weight: 400;
       }
 
-      .header-placeholder .hero-text p {
-        font-family: 'Montserrat';
-        font-size: 14px;
+      .section-subtitle {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        text-align: center;
+        color: #999;
+        margin-bottom: 40px;
+      }
+
+      .section-divider {
+        width: 40px;
+        height: 1px;
+        background: #d4b896;
+        margin: 0 auto 40px;
+      }
+
+      /* ── Program List ── */
+      .program-list {
+        list-style: none;
+      }
+
+      .program-list li {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 6px 0;
+        font-family: 'Montserrat', sans-serif;
+      }
+
+      .program-list li + li {
+        border-top: 1px solid #f0ebe5;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+        padding-top: 6px;
+      }
+
+      .program-item {
+        font-size: 15px;
+        font-weight: 400;
+        color: #3a3a3a;
+      }
+
+      .program-detail {
+        display: block;
+        font-size: 12px;
+        color: #999;
+        margin-top: 3px;
+        font-weight: 300;
+      }
+
+      /* ── Wedding Party ── */
+      .party-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .party-couple {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 0;
+        border-bottom: 1px solid #f0ebe5;
+        font-family: 'Montserrat', sans-serif;
+      }
+
+      .party-couple:last-child {
+        border-bottom: none;
+      }
+
+      .party-couple.highlight {
+        padding: 24px 0;
+      }
+
+      .party-couple.highlight .party-name {
+        font-family: 'Great Vibes', cursive;
+        font-size: 32px;
+        color: #b08968;
+        font-weight: 400;
+        word-spacing: 6px;
+      }
+
+      .party-number {
+        font-size: 12px;
+        color: #b08968;
+        font-weight: 600;
+        min-width: 28px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .party-name {
+        font-size: 15px;
+        color: #3a3a3a;
+        text-align: center;
+      }
+
+      .party-amp {
+        color: #b08968;
+        margin: 0 6px;
+        font-style: italic;
+      }
+
+      /* ── Role Groups ── */
+      .role-group {
+        margin-bottom: 32px;
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+      }
+
+      .role-title {
+        font-size: 11px;
         letter-spacing: 3px;
         text-transform: uppercase;
-        margin-top: 8px;
-        opacity: 0.85;
+        color: #b08968;
+        font-weight: 600;
+        margin-bottom: 10px;
       }
 
-      body {
-        background: #fff;
+      .role-name {
+        font-size: 15px;
+        color: #3a3a3a;
+        padding: 4px 0;
+        line-height: 1.6;
       }
 
-      /* ── No results ── */
-      .no-results {
+      .role-columns {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        margin-top: 4px;
+      }
+
+      .role-column {
         text-align: center;
-        padding: 30px 20px;
-        font-family: 'Montserrat';
-        color: #999;
+      }
+
+      .role-column-title {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #b08968;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .role-divider {
+        width: 30px;
+        height: 1px;
+        background: #e0d5c8;
+        margin: 24px auto;
+      }
+
+      /* ── Seating CTA ── */
+      .cta-section {
+        text-align: center;
+        padding: 50px 24px 70px;
+        background: linear-gradient(180deg, #fff 0%, #faf7f4 100%);
+      }
+
+      .cta-section .section-title {
+        margin-bottom: 12px;
+      }
+
+      .cta-section p {
+        font-family: 'Montserrat', sans-serif;
         font-size: 14px;
+        color: #888;
+        margin-bottom: 28px;
+      }
+
+      .cta-button {
+        display: inline-block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #fff;
+        background: #b08968;
+        padding: 16px 40px;
+        border-radius: 30px;
+        text-decoration: none;
+        transition: background 0.3s, transform 0.2s;
+        font-weight: 500;
+      }
+
+      .cta-button:hover {
+        background: #9a7555;
+        transform: translateY(-1px);
+      }
+
+      /* ── Footer ── */
+      footer {
+        text-align: center;
+        padding: 30px 24px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        color: #bbb;
+        letter-spacing: 2px;
+        background: #faf7f4;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        .hero-content h1 { font-size: 44px; }
+        .section-title { font-size: 36px; }
+        .party-couple.highlight .party-name { font-size: 26px; }
+        section { padding: 45px 20px; }
       }
     </style>
-
-    <script>
-      /*
-       * ═══════════════════════════════════════════════
-       *   GUEST DATA — Loaded from guests.xlsx
-       *   Excel must have columns: "Guest" and "Table"
-       * ═══════════════════════════════════════════════
-       */
-      let array = guestData;
-
-      const PARTNER_1 = "Jeromie";
-      const PARTNER_2 = "Karen";
-      const WEDDING_DATE = "May 2, 2026";
-
-      // SVG avatar icon (no external image needed)
-      const AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>`;
-
-      function getEveryoneFromTable(table) {
-        const tableOn = array.filter(item => item.Table === table);
-        let names = "";
-        tableOn.forEach((guest) => {
-          names += `<div><div class="avatar">${AVATAR_SVG}</div><div>${guest.Guest}</div></div>`;
-        });
-        // Toggle only the sameTable for this specific result
-        event.stopPropagation();
-        const el = event.currentTarget;
-        const wrapper = el.closest('.result-wrapper');
-        const sameTableDiv = wrapper.querySelector('.sameTable');
-        const infoDiv = wrapper.querySelector('.information');
-        const tableDiv = sameTableDiv.querySelector('.table-guests');
-
-        if (sameTableDiv.style.display === 'block') {
-          sameTableDiv.style.display = 'none';
-          return;
-        }
-
-        tableDiv.innerHTML = names;
-        infoDiv.innerHTML = `This table has <b>${tableOn.length}</b> guests. You will be seated with the guests shown below.`;
-        sameTableDiv.style.display = 'block';
-      }
-
-      $(document).ready(function () {
-        // Set dynamic content
-        $('.couple-names').html(`${PARTNER_1}&nbsp;&amp;&nbsp;${PARTNER_2}'s&nbsp;Wedding`);
-        document.title = `${PARTNER_1} & ${PARTNER_2} — Wedding Seating`;
-
-        $('#search').focus(() => {
-          $('.search').css({ "top": "-30%", height: "100%" });
-        });
-
-        $('#search').on('input', function () {
-          let input = $(this).val().toLowerCase();
-
-          if (input.length === 0) {
-            $('#welcomeText').show();
-            $('.search').css({ "top": "-10%", height: "40%" });
-            $('#result').hide();
-            return;
-          }
-
-          $('#welcomeText').hide();
-          $('#result').show();
-          $('.search').css({ "top": "-30%", height: "100%" });
-          $('#result').html('');
-
-          const results = array.filter(object =>
-            Object.values(object).some(val =>
-              typeof val === 'string' && val.toLowerCase().includes(input)
-            )
-          );
-
-          if (results.length === 0) {
-            $('#result').html('<div class="no-results">No guests found. Try searching by first or last name.</div>');
-            return;
-          }
-
-          results.forEach((result) => {
-            const parts = result.Guest.split(' ');
-            const first = parts[0];
-            const last = parts.slice(1).join(' ');
-
-            $('#result').append(`
-              <div class="result-wrapper">
-                <div id="resultbox" onclick="getEveryoneFromTable(${result.Table})">
-                  <div>
-                    <span class="tableNumber"><b>${result.Table}</b></span>
-                    <span class="tableNameSlack">TABLE</span>
-                  </div>
-                  <div style="margin-top:7px;">
-                    <span id="header"><b>${first}</b></span><br />
-                    <span class="lastName">${last}</span>
-                  </div>
-                  <div class="more">
-                    <div class="avatar avatar-lg">${AVATAR_SVG}</div>
-                  </div>
-                </div>
-                <div class="seeMore" onclick="getEveryoneFromTable(${result.Table})">Click to see everyone at Table ${result.Table}</div>
-                <div class="information"></div>
-                <div class="sameTable">
-                  <div class="table-guests"></div>
-                </div>
-              </div>
-            `);
-          });
-        });
-      });
-    </script>
   </head>
   <body>
-    <div class="container">
-      <div class="header">
-        <div class="overlay"></div>
-        <img src="./header_image.jpg" />
+
+    <!-- Hero -->
+    <div class="hero">
+      <img src="./header_image.jpg" alt="Jeromie & Karen" />
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>Jeromie & Karen</h1>
+        <div class="divider"></div>
+        <p class="date">May 2, 2026</p>
       </div>
-      <div class="search">
-        <input type="text" id="search" placeholder="Search by first name or last name" />
-        <div id="result" style="display:none;"></div>
-        <div id="welcomeText">
-          <p>Welcome to</p>
-          <h2 class="couple-names">Your Name & Partner's Name</h2>
-          <p>Please search above to find your seat.</p>
+      <div class="scroll-hint">Scroll</div>
+    </div>
+
+    <!-- Ceremony Program -->
+    <section>
+      <h2 class="section-title">Ceremony</h2>
+      <p class="section-subtitle">Order of Service</p>
+      <div class="section-divider"></div>
+
+      <ul class="program-list">
+        <li><span class="program-item">Processional Begins</span></li>
+        <li>
+          <span class="program-item">
+            Pastors
+            <span class="program-detail">Pr. Sam &middot; Pr. Babu &middot; Pr. Sabu &middot; Pr. Wilson</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Welcome &amp; Opening Prayer
+            <span class="program-detail">Pr. Sam Varughese</span>
+          </span>
+        </li>
+        <li><span class="program-item">Worship</span></li>
+        <li>
+          <span class="program-item">
+            Psalm Reading
+            <span class="program-detail">Pr. Alex Ramani</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Message
+            <span class="program-detail">Pr. Babu George</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Message
+            <span class="program-detail">Pr. Sabu Varughese</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Solemnisation
+            <span class="program-detail">Pr. Wilson Varkey</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Scripture Readings
+            <span class="program-detail">Dr. Vinod Thomas &middot; Pr. Danny Varghese</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Prayer of Blessing
+            <span class="program-detail">Thomas George</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Felicitation
+            <span class="program-detail">Dr. Jeff Papazian</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Prayer and Benediction
+            <span class="program-detail">Pr. P C Chandy</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Presentation of the Couple
+            <span class="program-detail">Pr. Wilson Varkey</span>
+          </span>
+        </li>
+        <li>
+          <span class="program-item">
+            Announcements
+            <span class="program-detail">Winston Edward</span>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Wedding Party -->
+    <section>
+      <h2 class="section-title">Bridal Party</h2>
+      <p class="section-subtitle">Celebrating With Us</p>
+      <div class="section-divider"></div>
+
+      <!-- Parents -->
+      <div class="role-group">
+        <div class="role-title">Parents of the Bride</div>
+        <div class="role-name">John George</div>
+        <div class="role-name">Blossom George</div>
+      </div>
+
+      <div class="role-group">
+        <div class="role-title">Parents of the Groom</div>
+        <div class="role-name">Reggie Ebenezer</div>
+        <div class="role-name">Annie Blossom</div>
+      </div>
+
+      <div class="role-divider"></div>
+
+      <!-- Matron & Maid of Honor -->
+      <div class="role-group">
+        <div class="role-title">Matron of Honor</div>
+        <div class="role-name">Leena Kurien</div>
+      </div>
+
+      <div class="role-group">
+        <div class="role-title">Maid of Honor</div>
+        <div class="role-name">Sahony Caba</div>
+      </div>
+
+      <!-- Best Men -->
+      <div class="role-group">
+        <div class="role-title">Best Men</div>
+        <div class="role-name">Jonathan Ebenezer</div>
+        <div class="role-name">Mathews Joseph</div>
+      </div>
+
+      <div class="role-divider"></div>
+
+      <!-- Bridesmaids & Groomsmen -->
+      <div class="role-group">
+        <div class="role-columns">
+          <div class="role-column">
+            <div class="role-column-title">Kingdom Sisters</div>
+            <div class="role-name">Julia George</div>
+            <div class="role-name">Jemima Ebenezer</div>
+            <div class="role-name">Lena Edward</div>
+            <div class="role-name">Christin Edward</div>
+            <div class="role-name">Jenna Gillen</div>
+          </div>
+          <div class="role-column">
+            <div class="role-column-title">Kingsmen</div>
+            <div class="role-name">Kenny George</div>
+            <div class="role-name">John Thomas</div>
+            <div class="role-name">Tony George</div>
+            <div class="role-name">Chris Chandy</div>
+            <div class="role-name">Koshy Sam</div>
+          </div>
         </div>
       </div>
+
+      <div class="role-divider"></div>
+
+      <!-- Flower Girls -->
+      <div class="role-group">
+        <div class="role-title">Flower Girls</div>
+        <div class="role-name">Isabella Edward</div>
+        <div class="role-name">Ariel George</div>
+        <div class="role-name">Moriah Pappazian</div>
+        <div class="role-name">Asha Pappazian</div>
+      </div>
+
+      <!-- Bible Bearers -->
+      <div class="role-group">
+        <div class="role-title">Bible Bearers</div>
+        <div class="role-name">Judah George</div>
+        <div class="role-name">Eliseo Edward</div>
+        <div class="role-name">Ezra Edward</div>
+        <div class="role-name">Luca Edward</div>
+      </div>
+
+      <div class="role-divider"></div>
+
+      <!-- Ushers -->
+      <div class="role-group">
+        <div class="role-title">Ushers</div>
+        <div class="role-name">Binoy Kurien</div>
+        <div class="role-name">Prinson Abraham</div>
+        <div class="role-name">Saju John</div>
+        <div class="role-name">Vivek Koshy</div>
+        <div class="role-name">Emily Thomas</div>
+        <div class="role-name">Sarah Berly</div>
+      </div>
+    </section>
+
+    <!-- Seating Chart CTA -->
+    <div class="cta-section">
+      <h2 class="section-title">Find Your Seat</h2>
+      <p>Search for your name to find your table assignment.</p>
+      <a href="./seatingchart.html" class="cta-button">Seating Chart</a>
     </div>
+
+    <!-- Footer -->
+    <footer>
+      Jeromie & Karen &middot; May 2, 2026
+    </footer>
+
   </body>
 </html>

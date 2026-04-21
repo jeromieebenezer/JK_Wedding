@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Seating Chart Manager — Jeromie & Karen</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="./guests.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f0eb;
+      color: #3a3a3a;
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e0d5c8;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #b08968;
+    }
+
+    .topbar .stats {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #b08968;
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: #9a7555; }
+
+    .btn-secondary {
+      background: #e8ddd3;
+      color: #6b4f3a;
+    }
+
+    .btn-secondary:hover { background: #d4c5b5; }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: #fff;
+    }
+
+    .btn-danger:hover { background: #c0392b; }
+
+    /* ── Search / Filter Bar ── */
+    .filter-bar {
+      padding: 16px 24px;
+      background: #fff;
+      border-bottom: 1px solid #e0d5c8;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .filter-bar input {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      padding: 10px 16px;
+      border: 1px solid #e0d5c8;
+      border-radius: 8px;
+      outline: none;
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .filter-bar input:focus {
+      border-color: #b08968;
+      box-shadow: 0 0 0 3px rgba(176,137,104,0.15);
+    }
+
+    /* ── Layout ── */
+    .main {
+      display: flex;
+      height: calc(100vh - 120px);
+    }
+
+    /* ── Unassigned Panel ── */
+    .unassigned-panel {
+      width: 280px;
+      background: #fff;
+      border-right: 1px solid #e0d5c8;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .panel-header {
+      padding: 16px;
+      border-bottom: 1px solid #f0ebe5;
+      font-size: 13px;
+      font-weight: 600;
+      color: #b08968;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-header .count {
+      background: #e8ddd3;
+      color: #6b4f3a;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .panel-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    /* ── Tables Grid ── */
+    .tables-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .table-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 2px solid #f0ebe5;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+
+    .table-card.drag-over {
+      border-color: #b08968;
+      box-shadow: 0 0 0 3px rgba(176,137,104,0.2);
+    }
+
+    .table-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #faf7f4;
+      border-bottom: 1px solid #f0ebe5;
+    }
+
+    .table-card-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #b08968;
+    }
+
+    .table-card-header .guest-count {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .edit-table-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ccc;
+      font-size: 14px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+      margin-left: 6px;
+      line-height: 1;
+    }
+
+    .edit-table-btn:hover {
+      color: #b08968;
+      background: #f0ebe5;
+    }
+
+    .table-card-body {
+      padding: 8px;
+      min-height: 60px;
+    }
+
+    /* ── Guest Chip ── */
+    .guest-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      margin: 4px 0;
+      background: #faf7f4;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: grab;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+
+    .guest-chip:hover {
+      background: #f0ebe5;
+      border-color: #d4c5b5;
+    }
+
+    .guest-chip.dragging {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+
+    .guest-chip .name {
+      font-weight: 500;
+    }
+
+    .guest-chip .tag {
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .guest-chip .remove-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0 0 0 8px;
+      line-height: 1;
+    }
+
+    .guest-chip .remove-btn:hover { color: #e74c3c; }
+
+    /* ── Add Guest Form ── */
+    .add-guest-row {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border-top: 1px solid #f0ebe5;
+    }
+
+    .add-guest-row input {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      padding: 6px 10px;
+      border: 1px solid #e0d5c8;
+      border-radius: 6px;
+      outline: none;
+      flex: 1;
+    }
+
+    .add-guest-row input:focus {
+      border-color: #b08968;
+    }
+
+    .add-guest-row button {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      background: #b08968;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      width: 32px;
+      cursor: pointer;
+    }
+
+    .add-guest-row button:hover { background: #9a7555; }
+
+    /* ── Toast Notification ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #333;
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #b08968;
+    }
+
+    .modal input {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid #e0d5c8;
+      border-radius: 8px;
+      width: 100%;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .modal input:focus { border-color: #b08968; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .main { flex-direction: column; }
+      .unassigned-panel { width: 100%; max-height: 200px; border-right: none; border-bottom: 1px solid #e0d5c8; }
+      .tables-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div>
+      <h1>Seating Chart Manager</h1>
+      <span class="stats" id="statsText">Loading...</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary" onclick="addNewTable()">+ Add Table</button>
+      <button class="btn btn-secondary" onclick="exportDataAs()" title="Choose where to save">Save As…</button>
+      <button class="btn btn-primary" onclick="exportData()">Save</button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <input type="text" id="searchGuest" placeholder="Search guests..." oninput="filterGuests()" />
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main">
+    <!-- Unassigned Guests -->
+    <div class="unassigned-panel">
+      <div class="panel-header">
+        Unassigned
+        <span class="count" id="unassignedCount">0</span>
+      </div>
+      <div class="panel-list" id="unassignedList"
+           ondrop="dropToUnassigned(event)"
+           ondragover="allowDrop(event)"
+           ondragenter="this.style.background='#f0ebe5'"
+           ondragleave="this.style.background=''">
+      </div>
+      <div class="add-guest-row">
+        <input type="text" id="newGuestName" placeholder="New guest name..." onkeydown="if(event.key==='Enter')addNewGuest()" />
+        <button onclick="addNewGuest()">+</button>
+      </div>
+    </div>
+
+    <!-- Tables Area -->
+    <div class="tables-area">
+      <div class="tables-grid" id="tablesGrid"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Rename Table Modal -->
+  <div class="modal-overlay" id="renameModal">
+    <div class="modal">
+      <h3>Rename Table</h3>
+      <input type="number" id="renameTableInput" placeholder="New table number..." />
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeRenameModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmRename()">Rename</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Move Modal -->
+  <div class="modal-overlay" id="moveModal">
+    <div class="modal">
+      <h3>Move Guest to Table</h3>
+      <input type="number" id="moveTableInput" placeholder="Enter table number..." />
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeMoveModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmMove()">Move</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ──
+    let guests = guestData.map((g, i) => ({ ...g, id: i }));
+    let nextId = guests.length;
+    let draggedGuestId = null;
+    let moveGuestId = null;
+
+    function getTableNumbers() {
+      const nums = new Set();
+      guests.forEach(g => { if (typeof g.Table === 'number') nums.add(g.Table); });
+      return [...nums].sort((a, b) => a - b);
+    }
+
+    function getGuestsForTable(table) {
+      return guests.filter(g => g.Table === table);
+    }
+
+    function getUnassigned() {
+      return guests.filter(g => g.Table === null || g.Table === undefined || g.Table === '');
+    }
+
+    // ── Render ──
+    function render(filter = '') {
+      const tables = getTableNumbers();
+      const unassigned = getUnassigned();
+      const filterLower = filter.toLowerCase();
+
+      // Stats
+      document.getElementById('statsText').textContent =
+        `${guests.length} guests across ${tables.length} tables`;
+
+      // Unassigned panel
+      const ul = document.getElementById('unassignedList');
+      ul.innerHTML = '';
+      unassigned
+        .filter(g => !filterLower || g.Guest.toLowerCase().includes(filterLower))
+        .forEach(g => {
+          ul.innerHTML += guestChipHTML(g);
+        });
+      document.getElementById('unassignedCount').textContent = unassigned.length;
+
+      // Tables
+      const grid = document.getElementById('tablesGrid');
+      grid.innerHTML = '';
+      tables.forEach(t => {
+        const tableGuests = getGuestsForTable(t)
+          .filter(g => !filterLower || g.Guest.toLowerCase().includes(filterLower));
+        const allTableGuests = getGuestsForTable(t);
+
+        // Don't hide entire table if filter is active but no matches
+        if (filterLower && tableGuests.length === 0) return;
+
+        grid.innerHTML += `
+          <div class="table-card" id="table-${t}"
+               ondrop="dropToTable(event, ${t})"
+               ondragover="allowDrop(event)"
+               ondragenter="this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')">
+            <div class="table-card-header">
+              <div style="display:flex;align-items:center;gap:4px;">
+                <h3>Table ${t}</h3>
+                <button class="edit-table-btn" onclick="openRenameModal(${t})" title="Rename table">&#9998;</button>
+              </div>
+              <span class="guest-count">${allTableGuests.length} guests</span>
+            </div>
+            <div class="table-card-body">
+              ${(filterLower ? tableGuests : allTableGuests).map(g => guestChipHTML(g)).join('')}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function guestChipHTML(g) {
+      return `
+        <div class="guest-chip" draggable="true"
+             ondragstart="dragStart(event, ${g.id})"
+             ondragend="dragEnd(event)"
+             id="guest-${g.id}">
+          <div>
+            <span class="name">${g.Guest}</span>
+          </div>
+          <button class="remove-btn" onclick="openMoveModal(${g.id})" title="Move to table">&harr;</button>
+        </div>
+      `;
+    }
+
+    // ── Drag & Drop ──
+    function dragStart(e, id) {
+      draggedGuestId = id;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => e.target.classList.add('dragging'), 0);
+    }
+
+    function dragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('.table-card').forEach(c => c.classList.remove('drag-over'));
+      document.getElementById('unassignedList').style.background = '';
+    }
+
+    function allowDrop(e) { e.preventDefault(); }
+
+    function dropToTable(e, table) {
+      e.preventDefault();
+      if (draggedGuestId === null) return;
+      const guest = guests.find(g => g.id === draggedGuestId);
+      if (guest) {
+        guest.Table = table;
+        toast(`Moved ${guest.Guest} to Table ${table}`);
+      }
+      draggedGuestId = null;
+      render(document.getElementById('searchGuest').value);
+    }
+
+    function dropToUnassigned(e) {
+      e.preventDefault();
+      if (draggedGuestId === null) return;
+      const guest = guests.find(g => g.id === draggedGuestId);
+      if (guest) {
+        guest.Table = null;
+        toast(`${guest.Guest} moved to unassigned`);
+      }
+      draggedGuestId = null;
+      render(document.getElementById('searchGuest').value);
+    }
+
+    // ── Move Modal ──
+    function openMoveModal(id) {
+      moveGuestId = id;
+      document.getElementById('moveModal').classList.add('active');
+      const input = document.getElementById('moveTableInput');
+      input.value = '';
+      input.focus();
+    }
+
+    function closeMoveModal() {
+      document.getElementById('moveModal').classList.remove('active');
+      moveGuestId = null;
+    }
+
+    function confirmMove() {
+      const tableNum = parseInt(document.getElementById('moveTableInput').value);
+      if (isNaN(tableNum)) return;
+      const guest = guests.find(g => g.id === moveGuestId);
+      if (guest) {
+        guest.Table = tableNum;
+        toast(`Moved ${guest.Guest} to Table ${tableNum}`);
+      }
+      closeMoveModal();
+      render(document.getElementById('searchGuest').value);
+    }
+
+    // ── Actions ──
+    function addNewGuest() {
+      const input = document.getElementById('newGuestName');
+      const name = input.value.trim();
+      if (!name) return;
+      guests.push({ Guest: name, Table: null, id: nextId++ });
+      input.value = '';
+      toast(`Added ${name}`);
+      render(document.getElementById('searchGuest').value);
+    }
+
+    function addNewTable() {
+      const tables = getTableNumbers();
+      const next = tables.length > 0 ? Math.max(...tables) + 1 : 1;
+      // Add a placeholder guest so the table appears (or just render empty)
+      // We'll just render with an empty table by adding to state
+      guests.push({ Guest: '(empty seat)', Table: next, id: nextId++ });
+      toast(`Created Table ${next}`);
+      render(document.getElementById('searchGuest').value);
+    }
+
+    function filterGuests() {
+      render(document.getElementById('searchGuest').value);
+    }
+
+    // ── File handle for direct save ──
+    let guestsFileHandle = null;
+
+    function buildGuestsJS() {
+      const validGuests = guests.filter(g => g.Guest && g.Guest !== '(empty seat)' && g.Table !== null);
+      const lines = validGuests.map(g => {
+        if (typeof g.Table === 'number') {
+          return `  { "Guest": "${g.Guest}", "Table": ${g.Table} }`;
+        }
+        return `  { "Guest": "${g.Guest}", "Table": "${g.Table}" }`;
+      });
+      return { js: `const guestData = [\n${lines.join(',\n')}\n];\n`, count: validGuests.length };
+    }
+
+    async function exportData() {
+      const { js, count } = buildGuestsJS();
+
+      // Use File System Access API if available (Chrome/Edge)
+      if ('showSaveFilePicker' in window) {
+        try {
+          // Reuse existing handle if we already picked the file
+          if (!guestsFileHandle) {
+            guestsFileHandle = await window.showSaveFilePicker({
+              suggestedName: 'guests.js',
+              types: [{ description: 'JavaScript', accept: { 'application/javascript': ['.js'] } }]
+            });
+          }
+          const writable = await guestsFileHandle.createWritable();
+          await writable.write(js);
+          await writable.close();
+          toast(`✓ Saved ${count} guests directly to guests.js`);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            guestsFileHandle = null;
+            toast('Save cancelled or failed — try again');
+          }
+        }
+      } else {
+        // Fallback: download
+        const blob = new Blob([js], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'guests.js';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast(`Downloaded guests.js — replace the existing file with this`);
+      }
+    }
+
+    // ── Save As (force re-pick location) ──
+    async function exportDataAs() {
+      guestsFileHandle = null;
+      await exportData();
+    }
+
+    // ── Toast ──
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._timeout);
+      el._timeout = setTimeout(() => el.classList.remove('show'), 2500);
+    }
+
+    // ── Rename Table ──
+    let renameTargetTable = null;
+
+    function openRenameModal(tableNum) {
+      renameTargetTable = tableNum;
+      const input = document.getElementById('renameTableInput');
+      input.value = tableNum;
+      document.getElementById('renameModal').classList.add('active');
+      setTimeout(() => { input.focus(); input.select(); }, 50);
+    }
+
+    function closeRenameModal() {
+      document.getElementById('renameModal').classList.remove('active');
+      renameTargetTable = null;
+    }
+
+    function confirmRename() {
+      const newNum = parseInt(document.getElementById('renameTableInput').value);
+      if (isNaN(newNum)) return;
+      if (newNum === renameTargetTable) { closeRenameModal(); return; }
+      if (getTableNumbers().includes(newNum)) {
+        toast(`Table ${newNum} already exists — guests will be merged`);
+      }
+      // Reassign all guests from old table number to new
+      guests.forEach(g => { if (g.Table === renameTargetTable) g.Table = newNum; });
+      toast(`Table ${renameTargetTable} renamed to Table ${newNum}`);
+      closeRenameModal();
+      render(document.getElementById('searchGuest').value);
+    }
+
+    // ── Keyboard shortcuts ──
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { closeMoveModal(); closeRenameModal(); }
+      if (e.key === 'Enter' && document.getElementById('moveModal').classList.contains('active')) confirmMove();
+      if (e.key === 'Enter' && document.getElementById('renameModal').classList.contains('active')) confirmRename();
+    });
+
+    // ── Init ──
+    render();
+  </script>
+</body>
+</html>
