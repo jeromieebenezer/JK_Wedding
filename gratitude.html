@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>With Gratitude · Jeromie &amp; Karen</title>
+  <meta name="description" content="A note of thanks to those who served our wedding day." />
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&family=Open+Sans:wght@300;400&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    @supports(padding:max(0px)) {
+      body, header, footer {
+        padding-left: min(0vmin, env(safe-area-inset-left));
+        padding-right: min(0vmin, env(safe-area-inset-right));
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: #faf7f4;
+      color: #3a3a3a;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #bbb;
+      padding: 16px 24px;
+      background: #fff;
+      border-bottom: 1px solid #f0ebe5;
+    }
+
+    .breadcrumb a {
+      color: #bbb;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: #b08968; }
+    .breadcrumb span { margin: 0 8px; }
+
+    /* ── Page layout ── */
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 0 0 50px;
+      border-bottom: 1px solid #e0d5c8;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.1s forwards;
+    }
+
+    .hero__date {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #b08968;
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(44px, 10vw, 64px);
+      font-weight: 400;
+      color: #3a3a3a;
+      margin-bottom: 24px;
+      word-spacing: 6px;
+    }
+
+    .hero__verse {
+      font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: #888;
+      line-height: 1.7;
+      max-width: 460px;
+      margin: 0 auto 10px;
+    }
+
+    .hero__citation {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #b08968;
+    }
+
+    /* ── Intro ── */
+    .intro {
+      text-align: center;
+      padding: 44px 0;
+      border-bottom: 1px solid #e0d5c8;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.4s forwards;
+    }
+
+    .intro p {
+      font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 17px;
+      color: #888;
+      line-height: 1.9;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ── Teams ── */
+    .teams {
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.7s forwards;
+    }
+
+    .team {
+      text-align: center;
+      padding: 32px 0;
+      border-bottom: 1px solid #f0ebe5;
+    }
+
+    .team:last-child { border-bottom: none; }
+
+    .team__role {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #b08968;
+      margin-bottom: 14px;
+    }
+
+    .team__names {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      color: #3a3a3a;
+      line-height: 1.9;
+    }
+
+    .team__names .lead {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 20px;
+      color: #3a3a3a;
+      margin-bottom: 4px;
+    }
+
+    .team__names .lead-role {
+      font-family: 'Montserrat', sans-serif;
+      font-style: normal;
+      font-size: 11px;
+      color: #b08968;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-left: 4px;
+    }
+
+    .team__names .members {
+      display: block;
+      color: #888;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+      width: 40px;
+      height: 1px;
+      background: #d4b896;
+      margin: 0 auto;
+    }
+
+    /* ── Closing ── */
+    .closing {
+      text-align: center;
+      padding: 50px 0 0;
+      margin-top: 24px;
+      border-top: 1px solid #e0d5c8;
+    }
+
+    .closing__correction {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
+      color: #aaa;
+      font-style: italic;
+      max-width: 420px;
+      margin: 0 auto 36px;
+      line-height: 1.8;
+    }
+
+    .closing__correction a {
+      color: #b08968;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .closing__motto {
+      font-family: 'Great Vibes', cursive;
+      font-size: 36px;
+      color: #b08968;
+      margin-bottom: 14px;
+      word-spacing: 4px;
+    }
+
+    .closing__signoff {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-bottom: 36px;
+    }
+
+    .back-link {
+      display: inline-block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff;
+      background: #b08968;
+      padding: 14px 32px;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      background: #9a7555;
+      transform: translateY(-1px);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 30px 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      color: #bbb;
+      letter-spacing: 2px;
+      background: #faf7f4;
+      border-top: 1px solid #f0ebe5;
+      margin-top: 60px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .page { padding: 40px 20px 60px; }
+      .hero { padding: 0 0 36px; }
+      .intro { padding: 32px 0; }
+      .team { padding: 24px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero, .intro, .teams { animation: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="./index.html">Home</a>
+    <span>›</span>
+    With Gratitude
+  </nav>
+
+  <main class="page">
+
+    <section class="hero">
+      <p class="hero__date">May 2, 2026</p>
+      <h1 class="hero__title">With Gratitude</h1>
+      <p class="hero__verse">&ldquo;There are different kinds of service, but the same Lord.&rdquo;</p>
+      <p class="hero__citation">1 Corinthians 12:5</p>
+    </section>
+
+    <section class="intro">
+      <p>Beyond those who stood with us, an unseen community made this day possible. Every song sung, every camera framed, every line of code written &mdash; this day bore the fingerprints of brothers and sisters who gave freely. To each one below &mdash; thank you. The Lord sees.</p>
+    </section>
+
+    <section class="teams">
+
+      <div class="team">
+        <h2 class="team__role">English Worship Band</h2>
+        <p class="team__names">
+          <span class="lead">Kenny George <span class="lead-role">lead</span></span>
+          <span class="members">Name &middot; Name &middot; Name &middot; Name</span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Malayalam Worship Band</h2>
+        <p class="team__names">
+          <span class="lead">Justin M <span class="lead-role">lead</span></span>
+          <span class="members">Name &middot; Name &middot; Name &middot; Name</span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Reception Band</h2>
+        <p class="team__names">
+          <span class="lead">Name <span class="lead-role">lead</span></span>
+          <span class="members">Name &middot; Name &middot; Name</span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Audio &amp; Visual</h2>
+        <p class="team__names">
+          <span class="members">Name &middot; Name &middot; Name</span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Live Stream</h2>
+        <p class="team__names">
+          <span class="members">Name &middot; Name</span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Photography &amp; Videography</h2>
+        <p class="team__names">
+          <span class="members">Name &middot; Name</span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Digital Assets</h2>
+        <p class="team__names">
+          <span class="lead">Name <span class="lead-role">brochure &amp; seating chart</span></span>
+          <span class="lead">Name <span class="lead-role">invitations &amp; graphics</span></span>
+        </p>
+      </div>
+
+      <div class="team">
+        <h2 class="team__role">Hospitality &amp; Setup</h2>
+        <p class="team__names">
+          <span class="members">Name &middot; Name &middot; Name &middot; Name</span>
+        </p>
+      </div>
+
+    </section>
+
+    <section class="closing">
+      <p class="closing__correction">If your name should appear here and doesn&rsquo;t, please <a href="mailto:hello@example.com">let us know</a> &mdash; we want to honor you by name.</p>
+      <p class="closing__motto">Soli Deo Gloria</p>
+      <p class="closing__signoff">Jeromie &amp; Karen &middot; May 2, 2026</p>
+      <a href="./index.html" class="back-link">Return to Brochure</a>
+    </section>
+
+  </main>
+
+  <footer>
+    Jeromie &amp; Karen &middot; May 2, 2026
+  </footer>
+
+</body>
+</html>
