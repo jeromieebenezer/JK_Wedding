@@ -165,6 +165,7 @@
         text-transform: uppercase;
         margin-top: 6px;
         font-family: 'Montserrat';
+        white-space: nowrap;
       }
 
       #resultbox p {
@@ -193,6 +194,7 @@
         text-transform: uppercase;
         font-weight: 600;
         margin-left: 13px;
+        white-space: nowrap;
       }
 
       .more {
@@ -230,6 +232,10 @@
         display: flex;
         align-items: center;
         gap: 10px;
+      }
+
+      .sameTable .guest-name {
+        white-space: nowrap;
       }
 
       .socialMedia {
@@ -370,7 +376,7 @@
         const tableOn = array.filter(item => String(item.Table) === String(table));
         let names = "";
         tableOn.forEach((guest) => {
-          names += `<div><div class="avatar">${AVATAR_SVG}</div><div>${guest.Guest}</div></div>`;
+          names += `<div><div class="avatar">${AVATAR_SVG}</div><div class="guest-name">${guest.Guest}</div></div>`;
         });
         // Toggle only the sameTable for this specific result
         event.stopPropagation();
