@@ -28,9 +28,13 @@
         scroll-behavior: smooth;
       }
 
+      .container {
+        height: 100%;
+      }
+
       /* ── Header / Hero ── */
       .header {
-        height: 420px;
+        height: 550px;
         overflow: hidden;
         position: relative;
       }
@@ -53,93 +57,86 @@
         z-index: 1;
       }
 
-      /* ── Page Intro (title) ── */
-      .page-intro {
-        background: #fff;
+      .container-title {
+        padding: 10px;
+        top: 77%;
+        position: absolute;
+        font-family: monospace;
+        color: #fff;
+        font-size: 17px;
         text-align: center;
-        padding: 44px 24px 0;
-        max-width: 680px;
-        margin: 0 auto;
       }
 
-      .welcome-label {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 12px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: #aaa;
-        margin-bottom: 6px;
-      }
-
-      .couple-names {
-        font-family: 'Great Vibes', cursive;
-        font-size: clamp(36px, 9vw, 58px);
-        color: #b08968;
-        word-spacing: 4px;
-        line-height: 1.25;
-        margin: 0 0 36px;
-      }
-
-      /* ── Search Bar ── */
-      .search-wrap {
-        max-width: 560px;
-        margin: 0 auto;
-        padding: 0 24px;
+      /* ── Search Area ── */
+      .search {
         background: #fff;
+        height: 40%;
+        top: -10%;
+        border-radius: 30px;
+        position: relative;
+        z-index: 1;
+        transition: all 1s;
       }
 
       #search {
-        padding: 16px 22px;
-        font-size: 15px;
+        padding: 16px;
+        font-size: 14px;
         width: 100%;
         border-radius: 30px;
         border: 0;
-        font-family: 'Montserrat', sans-serif;
-        box-shadow: 0 2px 14px rgba(0,0,0,0.1);
+        font-family: 'Montserrat';
+        box-shadow: 0 0 3px #aaa;
         -webkit-appearance: none;
-        -webkit-box-shadow: 0 2px 14px rgba(0,0,0,0.1);
+        -webkit-box-shadow: 0 0 3px #aaa;
         outline: none;
-        background: #fff;
       }
 
       #search:focus {
-        box-shadow: 0 2px 18px rgba(176,137,104,0.3);
-        -webkit-box-shadow: 0 2px 18px rgba(176,137,104,0.3);
+        box-shadow: 0 0 6px #b08968;
+        -webkit-box-shadow: 0 0 6px #b08968;
       }
 
-      /* ── MC Section ── */
-      .mc-section {
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 36px 24px 32px;
+      /* ── Welcome Text ── */
+      #welcomeText {
+        font-family: 'Montserrat';
+        padding: 10px;
         text-align: center;
-        background: #fff;
       }
 
-      .mc-divider {
-        width: 40px;
-        height: 1px;
-        background: #d4b896;
-        margin: 0 auto 24px;
+      #welcomeText .couple-names {
+        font-family: 'Great Vibes', cursive;
+        font-size: clamp(18px, 4vw, 26px);
+        color: #b08968;
+        margin: 5px 0;
+        word-spacing: 2px;
+        white-space: nowrap;
+      }
+
+      #welcomeText p {
+        color: #555;
+        font-size: 14px;
+      }
+
+      .mc-info {
+        margin-top: 28px;
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
       }
 
       .mc-label {
         display: block;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 11px;
-        letter-spacing: 4px;
+        font-size: 10px;
+        letter-spacing: 3px;
         text-transform: uppercase;
         color: #b08968;
         font-weight: 600;
-        margin-bottom: 10px;
+        margin-bottom: 4px;
       }
 
       .mc-names {
-        font-family: 'Great Vibes', cursive;
-        font-size: clamp(32px, 8vw, 48px);
+        font-size: 20px;
+        font-weight: 500;
         color: #3a3a3a;
-        word-spacing: 4px;
-        line-height: 1.3;
       }
 
       /* ── Results ── */
@@ -402,20 +399,26 @@
 
       $(document).ready(function () {
         // Set dynamic content
-        $('.couple-names').html(`${PARTNER_1}&nbsp;&amp;&nbsp;${PARTNER_2}'s&nbsp;Wedding&nbsp;Reception`);
-        document.title = `${PARTNER_1} & ${PARTNER_2} — Wedding Reception Seating`;
+        $('.couple-names').html(`${PARTNER_1}&nbsp;&amp;&nbsp;${PARTNER_2}'s&nbsp;Wedding`);
+        document.title = `${PARTNER_1} & ${PARTNER_2} — Wedding Seating`;
+
+        $('#search').focus(() => {
+          $('.search').css({ "top": "-30%", height: "100%" });
+        });
 
         $('#search').on('input', function () {
           let input = $(this).val().toLowerCase();
 
           if (input.length === 0) {
             $('#welcomeText').show();
+            $('.search').css({ "top": "-10%", height: "40%" });
             $('#result').hide();
             return;
           }
 
           $('#welcomeText').hide();
           $('#result').show();
+          $('.search').css({ "top": "-30%", height: "100%" });
           $('#result').html('');
 
           const results = array.filter(object =>
@@ -471,31 +474,24 @@
       Seating Chart
     </nav>
 
-    <!-- Hero image -->
-    <div class="header">
-      <div class="overlay"></div>
-      <img src="./header_image.jpg" />
-    </div>
-
-    <!-- Title -->
-    <div class="page-intro">
-      <p class="welcome-label">Welcome to</p>
-      <h1 class="couple-names">Jeromie &amp; Karen's Wedding Reception</h1>
-    </div>
-
-    <!-- Search -->
-    <div class="search-wrap">
-      <input type="text" id="search" placeholder="Search your name to find your seat" />
-    </div>
-
-    <!-- Results -->
-    <div id="result" style="display:none; max-width:680px; margin:0 auto; padding:0 24px; background:#fff;"></div>
-
-    <!-- MC section -->
-    <div id="welcomeText" class="mc-section">
-      <div class="mc-divider"></div>
-      <span class="mc-label">Reception MC's</span>
-      <p class="mc-names">Charles Edward &amp; Joel George</p>
+    <div class="container">
+      <div class="header">
+        <div class="overlay"></div>
+        <img src="./header_image.jpg" />
+      </div>
+      <div class="search">
+        <input type="text" id="search" placeholder="Search by first name or last name" />
+        <div id="result" style="display:none;"></div>
+        <div id="welcomeText">
+          <p>Welcome to</p>
+          <h2 class="couple-names">Jeromie &amp; Karen's Wedding Reception</h2>
+          <p>Please search above to find your seat.</p>
+          <div class="mc-info">
+            <span class="mc-label">Reception MC's</span>
+            <span class="mc-names">Charles Edward &amp; Joel George</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Floor Plan -->
