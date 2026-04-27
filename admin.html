@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="./guests.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -538,6 +539,48 @@
       font-weight: 500;
     }
 
+    /* ── Save As Dropdown ── */
+    .saveas-wrap {
+      position: relative;
+    }
+
+    .saveas-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: #fff;
+      border: 1px solid #e0d5c8;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      min-width: 190px;
+      z-index: 300;
+      overflow: hidden;
+    }
+
+    .saveas-menu.open { display: block; }
+
+    .saveas-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 11px 16px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #3a3a3a;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .saveas-menu button:hover { background: #faf7f4; }
+
+    .saveas-menu button + button {
+      border-top: 1px solid #f0ebe5;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .main { flex-direction: column; }
@@ -594,7 +637,13 @@
     </div>
     <div class="topbar-actions">
       <button class="btn btn-secondary" onclick="addNewTable()">+ Add Table</button>
-      <button class="btn btn-secondary" onclick="exportDataAs()" title="Choose where to save">Save As…</button>
+      <div class="saveas-wrap">
+        <button class="btn btn-secondary" onclick="toggleSaveAsMenu(event)">Save As…</button>
+        <div class="saveas-menu" id="saveAsMenu">
+          <button onclick="downloadJS(); closeSaveAsMenu()">⬇ Download guests.js</button>
+          <button onclick="exportToExcel(); closeSaveAsMenu()">⬇ Download as Excel (.xlsx)</button>
+        </div>
+      </div>
       <button class="btn btn-primary" onclick="exportData()">Save</button>
     </div>
   </div>
@@ -1017,7 +1066,59 @@
       }
     }
 
-    async function exportDataAs() { await exportData(); }
+    // ── Save As dropdown ──
+    function toggleSaveAsMenu(e) {
+      e.stopPropagation();
+      document.getElementById('saveAsMenu').classList.toggle('open');
+    }
+
+    function closeSaveAsMenu() {
+      document.getElementById('saveAsMenu').classList.remove('open');
+    }
+
+    // Close dropdown when clicking anywhere else
+    document.addEventListener('click', () => closeSaveAsMenu());
+
+    // ── Download guests.js locally ──
+    function downloadJS() {
+      const { js, count } = buildGuestsJS();
+      const blob = new Blob([js], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'guests.js';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast(`Downloaded guests.js (${count} guests)`);
+    }
+
+    // ── Export to Excel (.xlsx) ──
+    function exportToExcel() {
+      const validGuests = guests
+        .filter(g => g.Guest && g.Guest !== '(empty seat)' && g.Table !== null && g.Table !== undefined)
+        .sort((a, b) => (a.Table - b.Table) || a.Guest.localeCompare(b.Guest));
+
+      // Build worksheet data: header row + one row per guest
+      const wsData = [
+        ['Table', 'Guest Name'],
+        ...validGuests.map(g => [g.Table, g.Guest])
+      ];
+
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+      // Column widths
+      ws['!cols'] = [{ wch: 8 }, { wch: 30 }];
+
+      // Style header row bold (SheetJS CE supports basic cell objects)
+      ['A1', 'B1'].forEach(ref => {
+        if (ws[ref]) ws[ref].s = { font: { bold: true } };
+      });
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Seating Chart');
+      XLSX.writeFile(wb, 'JK_Wedding_Seating.xlsx');
+      toast(`Downloaded Excel — ${validGuests.length} guests`);
+    }
 
     // ── Toast ──
     function toast(msg) {
