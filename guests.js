@@ -5,8 +5,8 @@ const guestData = [
   { "Guest": "Lethi George", "Table": 1 },
   { "Guest": "Edward John", "Table": 1 },
   { "Guest": "Mary Edward", "Table": 1 },
-  { "Guest": "Thomas Samuel", "Table": 1 },
-  { "Guest": "Marykutty Samuel", "Table": 1 },
+  { "Guest": "Thomas Samuel", "Table": 0 },
+  { "Guest": "Marykutty Samuel", "Table": 0 },
   { "Guest": "George Varghese", "Table": 1 },
   { "Guest": "Saramma Jose", "Table": 1 },
   { "Guest": "Winston Edward", "Table": 2 },
@@ -358,5 +358,9 @@ const guestData = [
   { "Guest": "Lizyamma Mathew", "Table": 36 },
   { "Guest": "Samkutty Mathew", "Table": 36 },
   { "Guest": "Ponnamma Mathai", "Table": 36 },
-  { "Guest": "Ashley (sarah abraham) Wilson", "Table": 37 }
+  { "Guest": "Ashley (sarah abraham) Wilson", "Table": 37 },
+  { "Guest": "Alice Jacob", "Table": 1 },
+  { "Guest": "Aditya Rajan", "Table": 1 },
+  { "Guest": "Shelvin Pauly", "Table": 35 },
+  { "Guest": "Nancy Reji", "Table": 35 }
 ];
