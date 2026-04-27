@@ -950,9 +950,22 @@
           // 1. Get current file SHA
           const getRes = await fetch(
             `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}`,
-            { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            }
           );
-          if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
+          if (!getRes.ok) {
+            const errBody = await getRes.json().catch(() => ({}));
+            const msg = errBody.message || getRes.statusText;
+            if (getRes.status === 401) throw new Error(`401 – Token invalid or expired. Generate a new one.`);
+            if (getRes.status === 403) throw new Error(`403 – Token lacks repo write permission.`);
+            if (getRes.status === 404) throw new Error(`404 – Repo or file not found. Check token scope includes 'repo'.`);
+            throw new Error(`GitHub ${getRes.status}: ${msg}`);
+          }
           const fileData = await getRes.json();
           const sha = fileData.sha;
 
@@ -963,8 +976,9 @@
             {
               method: 'PUT',
               headers: {
-                Authorization: `token ${token}`,
-                Accept: 'application/vnd.github.v3+json',
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
@@ -976,14 +990,18 @@
             }
           );
           if (!putRes.ok) {
-            const err = await putRes.json();
-            throw new Error(err.message || putRes.status);
+            const errBody = await putRes.json().catch(() => ({}));
+            const msg = errBody.message || putRes.statusText;
+            console.error('GitHub PUT error', putRes.status, errBody);
+            if (putRes.status === 409) throw new Error(`409 – File changed remotely. Refresh the page and try again.`);
+            if (putRes.status === 422) throw new Error(`422 – Branch protection is blocking direct commits. Disable the "require pull request" rule in GitHub repo Settings → Branches.`);
+            throw new Error(`GitHub ${putRes.status}: ${msg}`);
           }
 
           toast(`✓ Saved ${count} guests — live site updates in ~30 seconds`);
         } catch (err) {
           console.error(err);
-          toast(`GitHub save failed: ${err.message}`);
+          toast(`Save failed: ${err.message}`);
         }
 
       } else {
