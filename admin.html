@@ -425,6 +425,119 @@
 
     .breadcrumb span { color: #ccc; margin: 0 6px; }
 
+    /* ── Chip Action Buttons ── */
+    .chip-actions {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .action-btn:hover { color: #b08968; background: #f0ebe5; }
+    .action-btn.delete:hover { color: #e74c3c; background: #fce4ec; }
+
+    .remove-table-btn:hover { color: #e74c3c !important; background: #fce4ec !important; }
+
+    /* ── Passcode Gate ── */
+    .passcode-gate {
+      position: fixed;
+      inset: 0;
+      background: #faf7f4;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .passcode-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 36px;
+      text-align: center;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+      max-width: 300px;
+      width: 90%;
+    }
+
+    .passcode-box h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #b08968;
+      margin-bottom: 6px;
+    }
+
+    .passcode-box p {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 24px;
+    }
+
+    .passcode-dots {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .passcode-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #d4c5b5;
+      background: transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .passcode-dot.filled {
+      background: #b08968;
+      border-color: #b08968;
+    }
+
+    .passcode-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .key-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      background: #f5f0eb;
+      border: none;
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      color: #3a3a3a;
+      transition: background 0.15s;
+    }
+
+    .key-btn:hover { background: #e8ddd3; }
+    .key-btn:active { background: #d4c5b5; }
+
+    .key-btn.key-del { font-size: 16px; color: #888; }
+    .key-btn.key-empty { background: transparent; cursor: default; }
+    .key-btn.key-empty:hover { background: transparent; }
+
+    .passcode-error {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 14px;
+      min-height: 18px;
+      font-weight: 500;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .main { flex-direction: column; }
@@ -434,6 +547,35 @@
   </style>
 </head>
 <body>
+
+  <!-- Passcode Gate -->
+  <div class="passcode-gate" id="passcodeGate">
+    <div class="passcode-box">
+      <h2>Seating Admin</h2>
+      <p>Enter passcode to continue</p>
+      <div class="passcode-dots">
+        <div class="passcode-dot" id="dot0"></div>
+        <div class="passcode-dot" id="dot1"></div>
+        <div class="passcode-dot" id="dot2"></div>
+        <div class="passcode-dot" id="dot3"></div>
+      </div>
+      <div class="passcode-keypad">
+        <button class="key-btn" onclick="keyPress('1')">1</button>
+        <button class="key-btn" onclick="keyPress('2')">2</button>
+        <button class="key-btn" onclick="keyPress('3')">3</button>
+        <button class="key-btn" onclick="keyPress('4')">4</button>
+        <button class="key-btn" onclick="keyPress('5')">5</button>
+        <button class="key-btn" onclick="keyPress('6')">6</button>
+        <button class="key-btn" onclick="keyPress('7')">7</button>
+        <button class="key-btn" onclick="keyPress('8')">8</button>
+        <button class="key-btn" onclick="keyPress('9')">9</button>
+        <button class="key-btn key-empty"></button>
+        <button class="key-btn" onclick="keyPress('0')">0</button>
+        <button class="key-btn key-del" onclick="keyDelete()">⌫</button>
+      </div>
+      <div class="passcode-error" id="passcodeError"></div>
+    </div>
+  </div>
 
   <!-- Breadcrumb -->
   <nav class="breadcrumb">
@@ -526,7 +668,57 @@
     </div>
   </div>
 
+  <!-- Edit Guest Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3>Edit Guest Name</h3>
+      <input type="text" id="editGuestInput" placeholder="Guest name..." />
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmEdit()">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ── Passcode Lock ──
+    const PASSCODE = '1523';
+    let passcodeEntered = '';
+
+    function keyPress(digit) {
+      if (passcodeEntered.length >= 4) return;
+      passcodeEntered += digit;
+      updateDots();
+      if (passcodeEntered.length === 4) setTimeout(checkPasscode, 150);
+    }
+
+    function keyDelete() {
+      passcodeEntered = passcodeEntered.slice(0, -1);
+      updateDots();
+      document.getElementById('passcodeError').textContent = '';
+    }
+
+    function updateDots() {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`dot${i}`).classList.toggle('filled', i < passcodeEntered.length);
+      }
+    }
+
+    function checkPasscode() {
+      if (passcodeEntered === PASSCODE) {
+        document.getElementById('passcodeGate').style.display = 'none';
+        sessionStorage.setItem('jk_admin_auth', '1');
+      } else {
+        document.getElementById('passcodeError').textContent = 'Incorrect passcode';
+        passcodeEntered = '';
+        updateDots();
+      }
+    }
+
+    if (sessionStorage.getItem('jk_admin_auth') === '1') {
+      document.getElementById('passcodeGate').style.display = 'none';
+    }
+
     // ── State ──
     let guests = guestData.map((g, i) => ({ ...g, id: i }));
     let nextId = guests.length;
@@ -588,6 +780,7 @@
               <div style="display:flex;align-items:center;gap:4px;">
                 <h3>Table ${t}</h3>
                 <button class="edit-table-btn" onclick="openRenameModal(${t})" title="Rename table">&#9998;</button>
+                <button class="edit-table-btn remove-table-btn" onclick="removeTable(${t})" title="Remove table">&times;</button>
               </div>
               <span class="guest-count">${allTableGuests.length} guests</span>
             </div>
@@ -605,10 +798,12 @@
              ondragstart="dragStart(event, ${g.id})"
              ondragend="dragEnd(event)"
              id="guest-${g.id}">
-          <div>
-            <span class="name">${g.Guest}</span>
+          <span class="name">${g.Guest}</span>
+          <div class="chip-actions">
+            <button class="action-btn" onclick="openEditModal(${g.id})" title="Edit name">&#9998;</button>
+            <button class="action-btn" onclick="openMoveModal(${g.id})" title="Move to table">&harr;</button>
+            <button class="action-btn delete" onclick="removeGuest(${g.id})" title="Remove">&times;</button>
           </div>
-          <button class="remove-btn" onclick="openMoveModal(${g.id})" title="Move to table">&harr;</button>
         </div>
       `;
     }
@@ -845,11 +1040,70 @@
       render(document.getElementById('searchGuest').value);
     }
 
+    // ── Remove Guest ──
+    function removeGuest(id) {
+      const guest = guests.find(g => g.id === id);
+      if (!guest) return;
+      if (!confirm(`Remove "${guest.Guest}" from the seating chart?`)) return;
+      guests = guests.filter(g => g.id !== id);
+      toast(`Removed ${guest.Guest}`);
+      render(document.getElementById('searchGuest').value);
+    }
+
+    // ── Remove Table ──
+    function removeTable(tableNum) {
+      const tableGuests = getGuestsForTable(tableNum);
+      const realGuests = tableGuests.filter(g => g.Guest !== '(empty seat)');
+      const msg = realGuests.length > 0
+        ? `Remove Table ${tableNum} and move its ${realGuests.length} guest(s) to Unassigned?`
+        : `Remove Table ${tableNum}?`;
+      if (!confirm(msg)) return;
+      // Move real guests to unassigned, remove placeholders
+      tableGuests.forEach(g => {
+        if (g.Guest !== '(empty seat)') g.Table = null;
+      });
+      guests = guests.filter(g => !(g.Guest === '(empty seat)' && g.Table === tableNum));
+      toast(`Table ${tableNum} removed`);
+      render(document.getElementById('searchGuest').value);
+    }
+
+    // ── Edit Guest Name ──
+    let editGuestId = null;
+
+    function openEditModal(id) {
+      editGuestId = id;
+      const guest = guests.find(g => g.id === id);
+      if (!guest) return;
+      const input = document.getElementById('editGuestInput');
+      input.value = guest.Guest;
+      document.getElementById('editModal').classList.add('active');
+      setTimeout(() => { input.focus(); input.select(); }, 50);
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+      editGuestId = null;
+    }
+
+    function confirmEdit() {
+      const newName = document.getElementById('editGuestInput').value.trim();
+      if (!newName) return;
+      const guest = guests.find(g => g.id === editGuestId);
+      if (guest) {
+        const oldName = guest.Guest;
+        guest.Guest = newName;
+        toast(`Renamed "${oldName}" → "${newName}"`);
+      }
+      closeEditModal();
+      render(document.getElementById('searchGuest').value);
+    }
+
     // ── Keyboard shortcuts ──
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { closeMoveModal(); closeRenameModal(); }
+      if (e.key === 'Escape') { closeMoveModal(); closeRenameModal(); closeEditModal(); }
       if (e.key === 'Enter' && document.getElementById('moveModal').classList.contains('active')) confirmMove();
       if (e.key === 'Enter' && document.getElementById('renameModal').classList.contains('active')) confirmRename();
+      if (e.key === 'Enter' && document.getElementById('editModal').classList.contains('active')) confirmEdit();
     });
 
     // ── Init ──
