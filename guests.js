@@ -367,5 +367,6 @@ const guestData = [
   { "Guest": "Daniel Lara", "Table": 23 },
   { "Guest": "Daniel Varghese", "Table": 23 },
   { "Guest": "Glory Cherian", "Table": 21 },
-  { "Guest": "Daisy Cherian", "Table": 21 }
+  { "Guest": "Daisy Cherian", "Table": 21 },
+  { "Guest": "Camila Lara", "Table": 23 }
 ];
