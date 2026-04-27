@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Spreadsheets (source data — not part of the web app)
+*.xlsx
+*.xls
+*.csv
+
+# Build / dev artifacts
+seatingchart/
+*.py
+
+# Editor
+.vscode/
+*.code-workspace
